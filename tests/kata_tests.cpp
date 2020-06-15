@@ -8,7 +8,6 @@
 using namespace eosio;
 using namespace fc;
 
-using namespace eosio;
 using namespace testing;
 using namespace chain;
 
