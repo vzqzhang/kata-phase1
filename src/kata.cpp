@@ -7,7 +7,8 @@ class [[eosio::contract("kata")]] kata : eosio::contract {
 public:
     using eosio::contract::contract;
 
-    kata(eosio::name receiver, eosio::name code, eosio::datastream<const char *> ds) : contract(receiver, code, ds)
+    kata(eosio::name receiver, eosio::name code, eosio::datastream<const char *> ds) : 
+		contract(receiver, code, ds)
     {
         eosio::symbol_code sym("SYS");
         zero = eosio::asset(0, eosio::symbol(sym, 4));
@@ -24,12 +25,13 @@ public:
     
     using category_table = eosio::multi_index<"category"_n, category,
         eosio::indexed_by<"getname"_n, eosio::const_mem_fun<category, uint64_t, &category::getname>>>;
-    
+
     [[eosio::action]]
     void sync() {
         category_table categories{get_self(), 0};
-        auto default_it = categories.find(eosio::name("default").value);
-        if (default_it != categories.end()) {
+        auto ct_table = categories.get_index<"getname"_n>();
+        auto default_it = ct_table.find(eosio::name("default").value);
+        if (default_it != ct_table.end()) {
             return;
         }
 
@@ -108,21 +110,21 @@ public:
         
         category_table categories{get_self(), 0};
         auto ct_table = categories.get_index<"getname"_n>();
+        
+        auto it = ct_table.find(eosio::name("default").value);
+        if (it == ct_table.end()) {
+            sync();
+            return;
+        }
 
         if (from == get_self()) {
             balance = -balance;
         }
         
-        auto it = ct_table.find(eosio::name("default").value);
-        if (it == ct_table.end()) {
-            sync();
-            it = ct_table.find(eosio::name("default").value);
-        }
-
         if (from == get_self()) {
             eosio::check(it->balance >= -balance, "Insufficient symbols to transfer out.");
         }
-        
+
         ct_table.modify(it, get_self(), [&]( auto& ct ) {
             ct.balance = ct.balance + balance;
         });

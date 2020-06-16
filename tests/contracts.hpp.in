@@ -5,8 +5,8 @@
 namespace eosio { namespace testing {
 
 struct contracts {
-   static std::vector<uint8_t> token_wasm() { return read_wasm("${EOSIO_ROOT}/eosio.contracts/build/contracts/eosio.token/eosio.token.wasm"); }
-   static std::vector<char>    token_abi() { return read_abi("${EOSIO_ROOT}/eosio.contracts/build/contracts/eosio.token/eosio.token.abi"); }
+   static std::vector<uint8_t> token_wasm() { return read_wasm("${EOSIO_CONTRACTS_ROOT}/build/contracts/eosio.token/eosio.token.wasm"); }
+   static std::vector<char>    token_abi() { return read_abi("${EOSIO_CONTRACTS_ROOT}/build/contracts/eosio.token/eosio.token.abi"); }
 
    static std::vector<uint8_t> kata_wasm() { return read_wasm("${CMAKE_BINARY_DIR}/../kata/kata.wasm"); }
    static std::vector<char>    kata_abi() { return read_abi("${CMAKE_BINARY_DIR}/../kata/kata.abi"); }

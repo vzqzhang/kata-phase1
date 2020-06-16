@@ -24,9 +24,9 @@ BOOST_AUTO_TEST_CASE(post) try {
    	t.set_code(N(eosio.token), eosio::testing::contracts::token_wasm());
    	t.set_abi(N(eosio.token), eosio::testing::contracts::token_abi().data());
 
-   	t.create_account(N(user), config::system_account_name, false, true);
-   	t.set_code(N(user), eosio::testing::contracts::kata_wasm());
-   	t.set_abi(N(user), eosio::testing::contracts::kata_abi().data());
+    t.create_account(N(myaccount), config::system_account_name, false, true);
+    t.set_code(N(myaccount), eosio::testing::contracts::kata_wasm());
+    t.set_abi(N(myaccount), eosio::testing::contracts::kata_abi().data());
    
     t.produce_block();
 
@@ -46,142 +46,160 @@ BOOST_AUTO_TEST_CASE(post) try {
         ("memo", "")
     );
     
-   // Send symbols to user
-   t.push_action(N(eosio.token), N(transfer), N(eosio.token),
-         mutable_variant_object("from", "eosio.token")("to", "user")(
+    // Send symbols to myaccount
+    t.push_action(N(eosio.token), N(transfer), N(eosio.token),
+        mutable_variant_object("from", "eosio.token")("to", "myaccount")(
         "quantity", "100.0000 SYS")("memo", "memo"));
 
-    //print categories
     t.push_action(
-        N(kata), N(displayall), N(kata),
-        mutable_variant_object()
-    );
-    
-    t.push_action(
-            N(user), N(newcategory), N(user),
-            mutable_variant_object("checking") 
+            N(myaccount), N(newcategory), N(myaccount),
+            mutable_variant_object("name", "checking")
         );
 
     t.push_action(
-            N(user), N(newcategory), N(user),
-            mutable_variant_object("saving") 
+            N(myaccount), N(newcategory), N(myaccount),
+            mutable_variant_object("name", "saving")
         );
-        
+
     BOOST_CHECK_THROW(
         [&] {
             t.push_action(
-                        N(user), N(create), N(user),
-                        mutable_variant_object("checking")
+                        N(myaccount), N(create), N(myaccount),
+                        mutable_variant_object("name", "checking")
+                    );
+        }(),
+        fc::exception);
+
+    BOOST_CHECK_THROW(
+        [&] {
+            t.push_action(
+                        N(myaccount), N(move), N(myaccount),
+                        mutable_variant_object("from", "default")("to", "checking")("amount", "101.0000 SYS")
                     );
         }(),
         fc::exception);
 
     t.push_action(
-            N(user), N(move), N(user),
-            mutable_variant_object("from", "default")("to", "checking")("amount", "50.0000 SYS")
+            N(myaccount), N(move), N(myaccount),
+            mutable_variant_object("from", "default")("to", "checking")("amount", "40.0000 SYS")
         );
 
     BOOST_CHECK_THROW(
         [&] {
             t.push_action(
-                        N(user), N(move), N(user),
-                        mutable_variant_object("from", "default")("to", "checking")("amount", "51.0000 SYS")
+                        N(myaccount), N(move), N(myaccount),
+                        mutable_variant_object("from", "default")("to", "checking")("amount", "60.0001 SYS")
                     );
         }(),
         fc::exception);
 
     t.push_action(
-            N(user), N(move), N(user),
-            mutable_variant_object("from", "default")("to", "checking")("amount", "50.0000 SYS")
+            N(myaccount), N(move), N(myaccount),
+            mutable_variant_object("from", "default")("to", "checking")("amount", "60.0000 SYS")
         );
-        
+
     BOOST_CHECK_THROW(
         [&] {
             t.push_action(
-                        N(user), N(move), N(user),
+                        N(myaccount), N(move), N(myaccount),
                         mutable_variant_object("from", "checking")("to", "saving")("amount", "-10.0000 SYS")
                     );
         }(),
         fc::exception);
         
     t.push_action(
-            N(user), N(move), N(user),
-            mutable_variant_object("from", "checking")("to", "saving")("amount", "50.0000 SYS")
+            N(myaccount), N(move), N(myaccount),
+            mutable_variant_object("from", "checking")("to", "saving")("amount", "60.0000 SYS")
         );
 
     BOOST_CHECK_THROW(
         [&] {
             t.push_action(
-                        N(user), N(move), N(user),
-                        mutable_variant_object("from", "checking")("to", "saving")("amount", "51.0000 SYS")
+                        N(myaccount), N(move), N(myaccount),
+                        mutable_variant_object("from", "checking")("to", "saving")("amount", "40.0005 SYS")
                     );
         }(),
         fc::exception);
 
     t.push_action(
-            N(user), N(move), N(user),
-            mutable_variant_object("from", "checking")("to", "saving")("amount", "50.0000 SYS")
+            N(myaccount), N(move), N(myaccount),
+            mutable_variant_object("from", "checking")("to", "saving")("amount", "40.0000 SYS")
         );
-        
+
     t.push_action(
-            N(user), N(move), N(user),
-            mutable_variant_object("from", "saving")("to", "default")("amount", "50.0000 SYS")
+            N(myaccount), N(move), N(myaccount),
+            mutable_variant_object("from", "saving")("to", "default")("amount", "70.0000 SYS")
         );
 
     BOOST_CHECK_THROW(
         [&] {
             t.push_action(
-                        N(user), N(move), N(user),
-                        mutable_variant_object("from", "saving")("to", "default")("amount", "51.0000 SYS")
+                        N(myaccount), N(move), N(myaccount),
+                        mutable_variant_object("from", "saving")("to", "default")("amount", "30.0001 SYS")
                     );
         }(),
         fc::exception);
 
     t.push_action(
-            N(user), N(move), N(user),
-            mutable_variant_object("from", "saving")("to", "default")("amount", "50.0000 SYS")
+            N(myaccount), N(move), N(myaccount),
+            mutable_variant_object("from", "saving")("to", "default")("amount", "30.0000 SYS")
         );
-             
+
     t.push_action(
-            N(user), N(move), N(user),
+            N(myaccount), N(move), N(myaccount),
             mutable_variant_object("from", "default")("to", "checking")("amount", "25.0000 SYS")
         );
 
     t.push_action(
-            N(user), N(move), N(user),
+            N(myaccount), N(move), N(myaccount),
             mutable_variant_object("from", "default")("to", "saving")("amount", "25.0000 SYS")
         );
         
-   	t.push_action(N(eosio.token), N(transfer), N(eosio.token),
-         mutable_variant_object("from", "user")("to", "eosio.token")(
+    t.push_action(N(eosio.token), N(transfer), N(myaccount),
+         mutable_variant_object("from", "myaccount")("to", "eosio.token")(
         "quantity", "10.0000 SYS")("memo", "memo"));
 
     BOOST_CHECK_THROW(
         [&] {
             t.push_action(
-                        N(user), N(transfer), N(user),
-                        mutable_variant_object("from", "user")("to", "eosio.token")("quantity", "50.0000 SYS")("memo", "memo")
+                        N(eosio.token), N(transfer), N(myaccount),
+                        mutable_variant_object("from", "myaccount")("to", "eosio.token")("quantity", "50.0000 SYS")("memo", "memo")
                     );
         }(),
         fc::exception);
+
+    t.push_action(
+            N(myaccount), N(move), N(myaccount),
+            mutable_variant_object("from", "saving")("to", "default")("amount", "10.0000 SYS")
+        );
         
-   	// Send symbols to user
+    // print categories
+    t.push_action(
+        N(myaccount), N(displayall), N(myaccount),
+        mutable_variant_object()
+    );
+
+    t.push_action(N(eosio.token), N(transfer), N(myaccount),
+         mutable_variant_object("from", "myaccount")("to", "eosio.token")(
+        "quantity", "50.0000 SYS")("memo", "memo"));
+
+    // Send symbols to myaccount
    	t.push_action(N(eosio.token), N(transfer), N(eosio.token),
-         mutable_variant_object("from", "eosio.token")("to", "user")(
-        "quantity", "100.0000 SYS")("memo", "memo"));
+         mutable_variant_object("from", "eosio.token")("to", "myaccount")(
+        "quantity", "200.0000 SYS")("memo", "memo"));
  
     BOOST_CHECK_THROW(
         [&] {
             t.push_action(
-                        N(user), N(move), N(user),
-                        mutable_variant_object("from", "default")("to", "checking")("amount", "141.0000 SYS")
+                        N(myaccount), N(move), N(myaccount),
+                        mutable_variant_object("from", "default")("to", "checking")("amount", "201.0000 SYS")
                     );
         }(),
         fc::exception);       
  
     t.push_action(
-            N(user), N(move), N(user),
-            mutable_variant_object("from", "default")("to", "checking")("amount", "140.0000 SYS")
+            N(myaccount), N(move), N(myaccount),
+            mutable_variant_object("from", "default")("to", "checking")("amount", "200.0000 SYS")
         );       
 }
 

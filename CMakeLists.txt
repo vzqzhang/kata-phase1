@@ -26,7 +26,7 @@ ExternalProject_Add(
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/tests
     BINARY_DIR ${CMAKE_BINARY_DIR}/tests
     CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DEOSIO_ROOT=${EOSIO_ROOT} -DEOSIO_CONTRACTS_ROOT=${EOSIO_CONTRACTS_ROOT}
-    TEST_COMMAND ./kata_test --color_output  --log_level=all -- --verbose
+    TEST_COMMAND ./kata_tests --color_output  --log_level=all -- --verbose
     INSTALL_COMMAND ""
     BUILD_ALWAYS 1
     )
