@@ -6,7 +6,7 @@ Please go through the following steps:
 2. cd build
 3. cmake .. -DEOSIO_CDT_ROOT=/path/to/eosio.cdt/build -DEOSIO_ROOT=/path/to//eos/build -DEOSIO_CONTRACTS_ROOT=/path/to//eosio.contracts
 
-The unit tests will automatically be run after compilation
+The unit tests will automatically run after compilation
 
 Run:
 
