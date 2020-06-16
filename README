@@ -1,0 +1,33 @@
+Build:
+
+Please go through the following steps:
+
+1. Go to the directory where README is, create a directory build: mkdir build
+2. cd build
+3. cmake .. -DEOSIO_CDT_ROOT=/path/to/eosio.cdt/build -DEOSIO_ROOT=/path/to//eos/build -DEOSIO_CONTRACTS_ROOT=/path/to//eosio.contracts
+
+The unit tests will automatically be run after compilation
+
+Run:
+
+1. cd build/kata. Skip steps 2 - 5 if you have already done.
+2. Create an account:
+	cleos create account eosio eosio.token your_public_key
+	cleos create account eosio your_account your_public_key
+3. Set permission for your your_account
+	cleos set account permission eosio.token active --add-code
+	cleos set account permission your_account active --add-code
+4. 
+	cleos set code eosio.token eosio.token.wasm
+	cleos set abi eosio.token eosio.token.abi
+5. Create symbols:
+	cleos push action eosio.token create '["eosio", "1000000.0000 SYS"]' -p eosio.token
+	cleos push action eosio.token issue '[your_account, "10000.0000 SYS", "issuing tokens"]' -p eosio
+6. Set contract
+	cleos set contract your_account $(pwd) --abi kata.abi -p your_account
+7. Now you can run commands like:
+	cleos -v push action your_account displayall '[ "" ]' -p your_account@active
+	cleos -v push action your_account newcategory '[ "saving" ]' -p your_account@active
+	cleos -v push action your_account move '[ "checking", "saving", "100.0000 SYS" ]' -p your_account@active
+	cleos -v push action eosio.token transfer '[ your_account, "eosio", "60.0000 SYS", "Gift" ]' -p your_account@active
+	cleos -v push action eosio.token transfer '[ "eosio", your_account, "100.0000 SYS", "Gift" ]' -p eosio@active
